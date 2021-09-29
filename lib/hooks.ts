@@ -13,13 +13,13 @@ export function useUserData() {
     if (user) {
       const ref = collection(firestore, 'users');
       const documentRef = doc(ref, user.uid);
-      console.log(`user uid: ${user.uid} ref: ${JSON.stringify(documentRef)}`);
+      // console.log(`user uid: ${user.uid} ref: ${JSON.stringify(documentRef)}`);
 
       const query = getDoc(documentRef);
 
       unsubscribe = query.then( (querySnapshot) => {
         setUsername(querySnapshot.data()?.username);
-        console.log(`Retrieved data: ${JSON.stringify(querySnapshot.data())}`);
+        // console.log(`Retrieved data: ${JSON.stringify(querySnapshot.data())}`);
       });
 
     } else {

@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
       <Component {...pageProps} />
       <Toaster></Toaster>
     </UserContext.Provider>
-  )
+  );
 }
 
 export default MyApp
