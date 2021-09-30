@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function PostFeed({ posts, admin }) {
   return posts ? posts.map(
     (post) => {
-      <PostItem post={post} key={post.slug} admin={admin}/>
+      return <PostItem post={post} key={post.slug} admin={admin}/>;
     }
   ) : null;
 }
@@ -29,7 +29,7 @@ function PostItem({ post, admin = false}) {
         <span>
           {wordCount} words. {minutesToRead} min read
         </span>
-        <span>{post.heartCount} Hearts</span>
+        <span className="push-left">{post.heartCount} Hearts</span>
       </footer>
     </div>
   );
