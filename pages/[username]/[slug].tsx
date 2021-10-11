@@ -3,39 +3,23 @@ import {
   firestore,
   postsToJSON,
 } from "../../lib/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  collectionGroup,
-  query,
-  where,
-  limit,
-} from "@firebase/firestore";
 import PostContent from "../../components/PostContent";
-import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 
 export async function getStaticProps({ params }) {
-  const { username, id } = { username: "vic", id: "hello-world" };
+  const { username, slug } = params;
   const userDoc = await getUserWithUsername(username);
 
   let post;
   let path;
 
   if (userDoc) {
-    const postsRef = collection(userDoc.ref, "posts");
-    const postQuery = query(
-      postsRef,
-      where("slug", "==", id),
-      limit(1)
-    );
+    const postsRef = userDoc.ref.collection("posts");
+    const postRef = postsRef.doc(slug);
 
-    const postSnapshot = (await getDocs(postQuery)).docs[0];
-    post = postsToJSON(postSnapshot)
-    console.log(post);
+    post = postsToJSON(await postRef.get());
     
-    path = postSnapshot.ref.path;
+    path = postRef.path;
   
   }
 
@@ -46,14 +30,13 @@ export async function getStaticProps({ params }) {
 }
 
 export async function getStaticPaths() {
-  const snapshot = await getDocs(collectionGroup(firestore, "posts"));
+  const snapshot = await firestore.collectionGroup("posts").get();
 
   const paths = snapshot.docs.map((doc) => {
     const { slug, username } = doc.data();
-    console.log({ slug, username });
     
     return {
-      params: { username, id: slug },
+      params: { username, slug },
     };
   });
 
@@ -64,8 +47,8 @@ export async function getStaticPaths() {
 }
 
 export default function Post(props) {
-  const postRef = doc(firestore, props.path);
-  const [realtimePost] = useCollectionData(postRef);
+  const postRef = firestore.doc(props.path);
+  const [realtimePost] = useDocumentData(postRef);
   const post = realtimePost || props.post;
 
   return (

@@ -8,14 +8,13 @@ import PostFeed from '../components/PostFeed';
 const LIMIT = 1;
 
 export async function getServerSideProps( context ) {
-  const postsRef = collectionGroup(firestore, 'posts');
-  const postsQuery = query(
-    postsRef, 
-    where('published', '==', true),
-    orderBy('createdAt', 'desc'),
-    limit(LIMIT)
-  );
-  const posts = (await getDocs(postsQuery)).docs.map(postsToJSON);
+  const postsRef = firestore.collectionGroup('posts');
+  const postsQuery = postsRef
+    .where("published", "==", true)
+    .orderBy("createdAt", "desc")
+    .limit(LIMIT);
+
+  const posts = (await postsQuery.get()).docs.map(postsToJSON);
 
   return {
     props: { posts },
@@ -33,16 +32,15 @@ export default function Home(props) {
     const last = posts[posts.length - 1];
     const cursor = typeof last.createdAt === 'number' ? fromMillis(last.createdAt) : last.createdAt;
 
-    const postsRef = collectionGroup(firestore, 'posts');
-    const postsQuery = query(
-      postsRef,
-      where("published", "==", true),
-      orderBy("createdAt", "desc"),
-      startAfter(cursor),
-      limit(LIMIT)
-    );
+    const postsRef = firestore.collectionGroup('posts');
+    const postsQuery = postsRef
+      .where("published", "==", true)
+      .orderBy("createdAt", "desc")
+      .startAfter(cursor)
+      .limit(LIMIT);
 
-    const newPosts = (await getDocs(postsQuery)).docs.map( (doc) => doc.data() );
+
+    const newPosts = (await postsQuery.get()).docs.map( (doc) => doc.data() );
     setPosts(posts.concat(newPosts));
     setLoading(false);
 

@@ -1,21 +1,7 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
-import "firebase/compat/storage";
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  limit,
-  getDocs,
-} from "firebase/firestore";
-import { GoogleAuthProvider } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+import "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -29,12 +15,15 @@ const firebaseConfig = {
   measurementId: "G-5WN1GXMG4G",
 };
 
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const auth = firebase.auth();
+export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 
-export const auth = getAuth(app);
-
-export const firestore = getFirestore(app);
+export const firestore = firebase.firestore();
 
 export const fromMillis = firebase.firestore.Timestamp.fromMillis;
 
@@ -44,13 +33,9 @@ export const fromMillis = firebase.firestore.Timestamp.fromMillis;
  * @param {string} username
  */
 export async function getUserWithUsername(username) {
-  const usersRef = collection(firestore, "users");
-  const collectionQuery = query(
-    usersRef,
-    where("username", "==", username),
-    limit(1)
-  );
-  const userDoc = (await getDocs(collectionQuery)).docs[0];
+  const usersRef = firestore.collection("users");
+  const collectionQuery = usersRef.where("username", "==", username).limit(1);
+  const userDoc = (await collectionQuery.get()).docs[0];
 
   return userDoc;
 }
@@ -64,7 +49,7 @@ export function postsToJSON(doc) {
 
   return {
     ...data,
-    createdAt: data.createdAt.toMillis(),
-    updatedAt: data.updatedAt.toMillis(),
+    createdAt: data?.createdAt.toMillis(),
+    updatedAt: data?.updatedAt.toMillis(),
   };
 }

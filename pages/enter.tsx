@@ -1,8 +1,7 @@
 import { doc, getDoc, writeBatch, WriteBatch } from "@firebase/firestore";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../lib/context";
-import { auth, firestore } from "../lib/firebase";
+import { auth, firestore, googleAuthProvider } from "../lib/firebase";
 
 import { debounce } from 'debounce';
 
@@ -27,13 +26,8 @@ export default function EnterPage(props) {
 }
 
 function SignInButton() {
-  // const signInWithGoogle = () => { }
-  const provider = new GoogleAuthProvider();
-
   const signInWithGoogle = async () => {
-    await signInWithPopup(auth, provider)
-      .then((user) => console.log(user))
-      .catch((error) => console.error(error));
+    await auth.signInWithPopup(googleAuthProvider);
   };
 
   return (
@@ -77,10 +71,10 @@ function UsernameForm() {
 
   const checkUsername = useCallback(debounce(async (username) => {
     if (username.length >= 3) {
-      const ref = doc(firestore, `usernames/${username}`);
-      const exists = await getDoc(ref);
-      console.log(`Firestore read executed! ${exists.exists()}`);
-      setIsValid(!exists.exists());
+      const ref = firestore.doc(`usernames/${username}`);
+      const { exists } = await ref.get();
+      console.log(`Firestore read executed! ${exists}`);
+      setIsValid(!exists);
       setLoading(false);
     }}, 
     500),
@@ -90,10 +84,10 @@ function UsernameForm() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const userDoc = doc(firestore, `users/${user.uid}`);
-    const usernameDoc = doc(firestore, `usernames/${formValue}`);
+    const userDoc = firestore.doc(`users/${user.uid}`);
+    const usernameDoc = firestore.doc(`usernames/${formValue}`);
 
-    const batch = writeBatch(firestore);
+    const batch = firestore.batch();
 
     batch.set(userDoc, { username: formValue, photoURL: user.photoURL, displayName: user.displayName});
     batch.set(usernameDoc, { uid: user.uid});
