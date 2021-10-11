@@ -8,20 +8,26 @@ export async function getServerSideProps( { params } ) {
 
   const userDoc = await getUserWithUsername(username);
 
+  if (!userDoc) {
+    return {
+      notFound: true
+    }
+  };
+
   let user = null;
   let posts = null;
 
-  if (userDoc) {
-    user = userDoc.data();
-    const postsRef = userDoc.ref.collection('posts');
-    const postsQuery = postsRef
-      .where("published", "==", true)
-      .orderBy("createdAt", "desc")
-      .limit(5);
+  
+  user = userDoc.data();
+  const postsRef = userDoc.ref.collection('posts');
+  const postsQuery = postsRef
+    .where("published", "==", true)
+    .orderBy("createdAt", "desc")
+    .limit(5);
 
 
-    posts = (await postsQuery.get()).docs.map(postsToJSON);
-  }
+  posts = (await postsQuery.get()).docs.map(postsToJSON);
+
 
   return {
     props: { user, posts },
