@@ -1,6 +1,5 @@
 import styles from '../styles/Home.module.css'
 import Loader from '../components/Loader';
-import { collectionGroup, getDocs, limit, orderBy, query, startAfter, where } from '@firebase/firestore';
 import { firestore, postsToJSON, fromMillis } from '../lib/firebase';
 import { useState } from 'react';
 import PostFeed from '../components/PostFeed';

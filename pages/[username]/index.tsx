@@ -1,4 +1,3 @@
-import { collection, getDocs, limit, orderBy, where, query } from "@firebase/firestore";
 import PostFeed from "../../components/PostFeed";
 import UserProfile from "../../components/UserProfile";
 import { firestore, getUserWithUsername, postsToJSON } from "../../lib/firebase";

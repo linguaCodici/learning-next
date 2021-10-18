@@ -1,4 +1,3 @@
-import { doc, getDoc, writeBatch, WriteBatch } from "@firebase/firestore";
 import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../lib/context";
 import { auth, firestore, googleAuthProvider } from "../lib/firebase";
