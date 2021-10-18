@@ -7,7 +7,7 @@ import "firebase/storage";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAUx4IKzndWJRVDponK5-CuzW_R5h6NOFI",
-  authDomain: "learning-next-green.vercel.app",
+  authDomain: "blog-a17a0.firebaseapp.com",
   projectId: "blog-a17a0",
   storageBucket: "blog-a17a0.appspot.com",
   messagingSenderId: "706432729720",
